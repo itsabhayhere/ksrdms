@@ -1,0 +1,9 @@
+/vendor
+/node_modules
+/.env
+/storage/*.key
+/storage/app/*
+/storage/framework/*
+/storage/logs/*
+/bootstrap/cache/*
+dms1.zip

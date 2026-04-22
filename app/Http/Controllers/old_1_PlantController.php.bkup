@@ -1,0 +1,131 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
+
+class PlantController extends Controller
+{
+    
+    public function __construct()
+    {
+        $this->middleware('PlantAuth');
+    }
+    
+    public function checkNotification()
+    {        
+        $pl = session()->get("plantInfo");
+
+        $not = DB::table('notifications')
+                ->selectRaw("*, DATE_FORMAT(created_at,'%h:%i %p %d %b %Y') as created_at")
+                ->where(["ledgerId" => $pl->ledgerId])->orderby("id", "DESC")->limit(30)->get();
+
+        if(count($not) > 0 ){
+            return ["error" => false, "data"=> $not];
+        }else{
+            return ["error" => true, "msg"=> "No new notification."];
+        }
+    }
+    
+    public function deleteNotification()
+    {        
+        $pl = session()->get("plantInfo");
+
+        $not = DB::table('notifications')->where(["ledgerId" => $pl->ledgerId, "id" => request("notiId")])->delete();
+
+        if($not){
+            return ["error" => false, "msg"=> "Notification deleted"];
+        }else{
+            return ["error" => true, "msg"=> "Some error has occured while removing notification."];
+        }
+    }
+
+    public function dashboard()
+    {
+        // dd(session()->all()); exit;
+        return view("plant.dashboard", ['activepage' => "dashboard"]);
+    }
+
+    public function requestToAdd()
+    {
+        $pl = session()->get("loginUserInfo")->plantId;
+
+        $req = DB::table('plantdairymap')->where(["plantId" => $pl])
+                    ->select("*", "city.name as city", "states.name as state")
+                    ->where("plantdairymap.isActivated", 0)
+                    ->join("dairy_info", "dairy_info.id", "=", "plantdairymap.dairyId")
+                    ->leftJoin("city", "city.id", "=", "dairy_info.city")
+                    ->leftJoin("states", "states.id", "=", "dairy_info.state")
+                    ->leftJoin("dairy_propritor_info", "dairy_propritor_info.dairyId", "=", "dairy_info.id")
+                    ->get();
+
+        return view("plant.request", ["requests" => $req, 'activepage' => "request"]);
+    }
+
+    public function plantAddRequestComplete()
+    {
+        $pl = session()->get("plantInfo");
+
+        if(request("action") == "Accept"){
+            $res = DB::table("plantdairymap")->where(["plantId" => $pl->id, "dairyId" => request("dairyId")])->update(['isActivated' => 1]);
+            $this->makeDairyVerifiedNotification($pl);
+            return ["error" => false, "msg" => "Request Accepted."];
+        }elseif(request("action") == "Decline"){
+            $res = DB::table("plantdairymap")->where(["plantId" => $pl->id, "dairyId" => request("dairyId")])->delete();
+            $this->makeDairyVerifiedNotification($pl);
+            return ["error" => false, "msg" => "Request declined."];
+        }else{
+            return ["error" => true, "msg" => "Something is wrong."];
+        }
+    }
+
+    public function makeDairyVerifiedNotification($pl)
+    {
+        $dairy = DB::table('dairy_info')->where(["id" => request('dairyId')])->get()->first();
+
+        if(request('action') == "Accept"){
+            $msg = "Plant (".$pl->plantName.") has verified your dairy.";
+        }else{
+            $msg = "Plant (".$pl->plantName.") has remove your dairy from verified dairy list.";
+        }
+
+        $data = [
+            "ledgerId"      => $dairy->ledgerId,
+            "notification"  => $msg,
+            "created_at"    => date("Y-m-d H:i:s")
+        ];
+
+        return DB::table('notifications')->insertGetId($data);
+    }
+
+    public function plants()
+    {
+        $pl = session()->get("loginUserInfo")->plantId;
+
+        $plants = DB::table("milk_plants")->where(["parentPlantId" => $pl])
+                    ->select("*", "city.name as city", "states.name as state")
+                    ->leftJoin("milk_plant_head", "milk_plant_head.plantId", "=", "milk_plants.id")
+                    ->leftJoin("city", "city.id", "=", "milk_plants.city")
+                    ->leftJoin("states", "states.id", "=", "milk_plants.state")->get();
+        
+        return view("plant.plants", ["plants" => $plants, "activepage" => "plants"]);
+    }
+
+    public function dairies()
+    {
+        $pl = session()->get("plantInfo");
+
+        $dairies = DB::table('plantdairymap')->where(["plantId" => $pl->id])
+                    ->select("*", "city.name as city", "states.name as state")
+                    ->where("plantdairymap.isActivated", 1)
+                    ->leftjoin("dairy_info", "dairy_info.id", "=", "plantdairymap.dairyId")
+                    ->leftJoin("city", "city.id", "=", "dairy_info.city")
+                    ->leftJoin("states", "states.id", "=", "dairy_info.state")
+                    ->leftJoin("dairy_propritor_info", "dairy_propritor_info.dairyId", "=", "dairy_info.id")
+                    ->get();
+
+        return view("plant.dairies", ["dairies" => $dairies, "activepage" => "dairies"]);
+    }
+}

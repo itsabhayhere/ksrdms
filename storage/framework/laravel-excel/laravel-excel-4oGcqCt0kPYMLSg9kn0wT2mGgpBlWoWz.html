@@ -1,0 +1,63 @@
+<form action="https://www.ksrdms.com/export/member/report" method="post" id="form1">
+   <span hidden> @csrf</span>
+
+<button type="submit" class="btn btn-success" value="Export">Export Combine Excel</button>
+</form>
+
+ <form action="https://www.ksrdms.com/export/member/report/pdf" method="post" id="form1">
+   <span hidden> @csrf</span>
+
+<button type="submit" class="btn btn-success" value="Export">PDF</button>
+</form> 
+
+
+<table class="table passbookReport-table tright table-bordered table-stripped display" style="width:100%" width="100%" cellpadding="0" cellspacing="0" border="1">
+    <thead> 
+        <tr>
+            <th rowspan="2">Date</th>
+            <th colspan="5">Morning Shift</th>
+            <th colspan="5">Evening Shift</th>
+            <th colspan="2">Total</th>
+        </tr>
+        <tr>
+            <th>Qty</th>
+            <th>Fat</th>
+            <th>Snf</th>
+            <th>Rate</th>
+            <th>Amount</th>
+            <th>Qty</th>
+            <th>Fat</th>
+            <th>Snf</th>
+            <th>Rate</th>
+            <th>Amount</th>
+
+            <th>Qty</th>
+            
+            <th>Amount</th>
+        </tr>
+    </thead>
+    <tbody>
+                    
+    </tbody>
+
+    <tfoot>
+        
+        <tr style="font-weight:bolder;background: #e4e4e4;">
+            <td>Total</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td></td>
+            <td style="font-family:'DejaVu Sans', sans-serif;font-size:14px">0.00</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td></td>
+            <td style="font-family:'DejaVu Sans', sans-serif;font-size:14px"> 0.00</td>
+
+            <td>0</td>
+            
+            <td style="font-family:'DejaVu Sans', sans-serif;font-size:14px"> 0.00</td>
+        </tr>
+    </tfoot>
+</table>

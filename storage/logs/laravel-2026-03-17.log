@@ -1,0 +1,32 @@
+[2026-03-17 23:27:51] local.ERROR: Cannot declare class App\Http\Controllers\PlantRateCardController, because the name is already in use {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalErrorException(code: 64): Cannot declare class App\\Http\\Controllers\\PlantRateCardController, because the name is already in use at /Users/hadi/Desktop/kdram/domains/ksrdms.com/public_html/v-1.1.7/storage/framework/views/cf687c84ad4aea9d29ea99be4675b015745a9e0c.php:27)
+[stacktrace]
+#0 {main}
+"} 
+[2026-03-17 23:27:52] local.ERROR: Cannot declare class App\Http\Controllers\PlantRateCardController, because the name is already in use {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalErrorException(code: 64): Cannot declare class App\\Http\\Controllers\\PlantRateCardController, because the name is already in use at /Users/hadi/Desktop/kdram/domains/ksrdms.com/public_html/v-1.1.7/storage/framework/views/cf687c84ad4aea9d29ea99be4675b015745a9e0c.php:27)
+[stacktrace]
+#0 {main}
+"} 
+[2026-03-17 23:28:21] local.ERROR: Cannot declare class App\Http\Controllers\PlantRateCardController, because the name is already in use {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalErrorException(code: 64): Cannot declare class App\\Http\\Controllers\\PlantRateCardController, because the name is already in use at /Users/hadi/Desktop/kdram/domains/ksrdms.com/public_html/v-1.1.7/storage/framework/views/cf687c84ad4aea9d29ea99be4675b015745a9e0c.php:0)
+[stacktrace]
+#0 {main}
+"} 
+[2026-03-17 23:29:46] local.ERROR: Cannot declare class App\Http\Controllers\PlantRateCardController, because the name is already in use {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalErrorException(code: 64): Cannot declare class App\\Http\\Controllers\\PlantRateCardController, because the name is already in use at /Users/hadi/Desktop/kdram/domains/ksrdms.com/public_html/v-1.1.7/storage/framework/views/cf687c84ad4aea9d29ea99be4675b015745a9e0c.php:0)
+[stacktrace]
+#0 {main}
+"} 
+[2026-03-17 23:31:24] local.ERROR: Cannot declare class App\Http\Controllers\PlantRateCardController, because the name is already in use {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalErrorException(code: 64): Cannot declare class App\\Http\\Controllers\\PlantRateCardController, because the name is already in use at /Users/hadi/Desktop/kdram/domains/ksrdms.com/public_html/v-1.1.7/storage/framework/views/cf687c84ad4aea9d29ea99be4675b015745a9e0c.php:27)
+[stacktrace]
+#0 {main}
+"} 
+[2026-03-17 23:31:31] local.ERROR: Cannot declare class App\Http\Controllers\PlantRateCardController, because the name is already in use {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalErrorException(code: 64): Cannot declare class App\\Http\\Controllers\\PlantRateCardController, because the name is already in use at /Users/hadi/Desktop/kdram/domains/ksrdms.com/public_html/v-1.1.7/storage/framework/views/cf687c84ad4aea9d29ea99be4675b015745a9e0c.php:0)
+[stacktrace]
+#0 {main}
+"} 
+[2026-03-17 23:31:32] local.ERROR: Cannot declare class App\Http\Controllers\PlantRateCardController, because the name is already in use {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalErrorException(code: 64): Cannot declare class App\\Http\\Controllers\\PlantRateCardController, because the name is already in use at /Users/hadi/Desktop/kdram/domains/ksrdms.com/public_html/v-1.1.7/storage/framework/views/cf687c84ad4aea9d29ea99be4675b015745a9e0c.php:0)
+[stacktrace]
+#0 {main}
+"} 
+[2026-03-17 23:31:32] local.ERROR: Cannot declare class App\Http\Controllers\PlantRateCardController, because the name is already in use {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalErrorException(code: 64): Cannot declare class App\\Http\\Controllers\\PlantRateCardController, because the name is already in use at /Users/hadi/Desktop/kdram/domains/ksrdms.com/public_html/v-1.1.7/storage/framework/views/cf687c84ad4aea9d29ea99be4675b015745a9e0c.php:0)
+[stacktrace]
+#0 {main}
+"} 

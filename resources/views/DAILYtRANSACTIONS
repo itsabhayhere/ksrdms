@@ -1,0 +1,734 @@
+@extends('theme.default') 
+@section('content')
+
+@php
+    if (session()->has('dailyTransactionDate')) { $date = session()->get('dailyTransactionDate'); $flag = 0;}else{ $date = date("d-m-Y"); $flag = 1;}
+
+    if (session()->has('dailyTransactionShift')) { $curShift = session()->get('dailyTransactionShift');  if($flag)$flag=0;}
+    else{ if (date("H", time()) < 12) $curShift = "morning"; else $curShift = "evening"; $flag=1;}
+@endphp
+
+<style type="text/css">
+    .m-0 {
+        margin-top: 0;
+    }
+
+    .errorMessage {
+        color: red;
+    }
+
+</style>
+<!-- <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet"> -->
+
+<div class="span-fixed response-alert" id="response-alert"></div>
+
+
+<div class="wmodel clearfix" id="dateShiftPopup">
+    <div class="close">X</div>
+    <div class="wmodel-body">
+
+        <h3 class="text-center">Select Date </h3>
+        <hr>
+        <div class="col-sm-12">
+            <div class="col-sm-6">
+                <label>Date</label>
+                <input type="text" class="form-control" id="sdate" placeholder="Date" value="{{date("d-m-Y", strtotime($date))}}" name="date" autofocus autocomplete="off">
+            </div>
+            <div class="col-sm-6">
+                <div id="SetShiftField" class="SetShiftField">
+                    <label>Shift</label>
+                    <select id="sdailyShift" class="dailyShift selectpicker" name="dailyShift">
+                        <option value="morning" @if($curShift=="morning")selected @endif> Morning Shift </option>
+                        <option value="evening" @if($curShift=="evening")selected @endif> Evening Shift </option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12 text-center pt-20">
+            <a href="#" role="button" class="btn btn-primary" id="date-shift-btn" onclick="fetch_transactions_by_date(this)">Fetch Transactions</a>
+        </div>
+
+    </div>
+</div>
+
+
+<div class="wmodel clearfix" id="sameTransModel" style="width: 75%;">
+    <div class="close">X</div>
+    <div class="wmodel-body">
+
+    </div>
+</div>
+
+
+<div class="pageblur">
+
+    <div class="clearfix">
+
+        <div class="fcard margin-fcard-1 pt-0 clearfix">
+            <div class="heading">
+                <h3>New Daily Transaction</h3>
+            </div>
+
+            <div class="clearfix">
+                <form method="post" action="{{ url('/DailyTransactionSubmit') }}" class="clearfix" id="dailyForm">
+                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                    <input type="hidden" id="dairyId" name="dairyId" value="{{{ Session::get('loginUserInfo')->dairyId }}}">
+                    <input type="hidden" name="status" value="true">
+
+                    <div class="col-md-12 clearfix">
+                        <div class="col-sm-6">
+                            <label>Date: <b><input type="text" class="noinput" id="date" value="<?php echo date(" d-m-Y ") ; ?>" name="date" readonly></b></label>
+                        </div>
+                        <div class="col-sm-3">
+                            <div id="SetShiftField" class="SetShiftField">
+                                <label>Shift: <b><input type="text" class="noinput" id="dailyShift" value="{{ucfirst($curShift)}}" name="dailyShift" readonly size="9"></b></label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="#" role="button" class="btn btn-primary btn-sm" id="" onclick="show_popUp(this)">Change date & shift</a>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12">
+                        <div class="pt-10"></div>
+                        <div class="col-sm-3">
+                            <label>Member Code</label>
+                            <span class="memberCodeErrorMessage errorMessage" id="memberCodeErrorMessage"></span>
+                                {{-- <input type="text" id="memberCode" class="form-control" onchange="SetMemberCode(this)" name="memberCode"> --}}
+                                <input id="memberCode" class="form-control" required tabindex="1" autofocus>
+                                <input type="hidden" id="memberCode-id" onchange="SetMemberCode(this)" name="memberCode" required>
+                                {{-- <p id="memberCode-description"></p> --}}
+                                <script>                            
+
+                                $( function() {
+                                    var projects = [
+                                        @foreach ($memberInfo as $memberInfoData)
+                                            {
+                                                value: "{{ $memberInfoData->memberPersonalCode }}",
+                                                label: "{{ $memberInfoData->memberPersonalCode }}",
+                                                desc: "{{ $memberInfoData->memberPersonalName }}",
+                                            },
+                                        @endforeach
+                                    ];
+                                
+                                    $( "#memberCode" ).autocomplete({
+                                        minLength: 0,
+                                        source: projects,
+                                        focus: function( event, ui ) {
+                                            $( "#memberCode" ).val( ui.item.label );
+                                            return false;
+                                        },
+                                        select: function( event, ui ) {
+                                            $( "#memberCode" ).val( ui.item.label );
+                                            $( "#memberCode-id" ).val( ui.item.value );
+                                            // $( "#memberCode-description" ).html( ui.item.desc );
+                                            $("#memberCode-id").trigger("change");
+                                            return false;
+                                        }
+                                    })
+                                    .autocomplete( "instance" )._renderItem = function( ul, item ) {
+                                        return $( "<li>" )
+                                            .append( "<div>" + item.label + "<br>" + item.desc + "</div>" )
+                                                .appendTo( ul );
+                                            };
+                                        });
+                                </script>
+                        </div>
+                        <div class="col-sm-3 hide">
+                            <label>Member Name</label>
+                            <span class="memberNameErrorMessage errorMessage" id="memberNameErrorMessage"></span>
+                            <input required="true" type="hidden" id="memberNameInputHidden" name="memberName">
+                            <input required="true" type="hidden" id="memberCodeInputHidden" name="memberCode">
+                            <div class="member-info-code"> <span style="letter-spacing: 1px;font-weight: 100; color:#929292">Please Select Member Code</span></div>
+                        </div>
+                        
+
+                        @if(strtolower($colMan->rateCardTypeForCow) == 'fat')
+                            <div class="col-sm-6 m-0" id="rateForRateCardFat">
+                                <label>Fat</label>
+                                <input type="number" class="form-control" placeholder="Enter Fat" id="fatValue" name="fatValue" step="0.05" tabindex="3">
+                                <input type="hidden" value="1" id="fatSnf_snfValue" name="snf" required step="0.1" >
+                            </div>
+                        @elseif(strtolower($colMan->rateCardTypeForCow) == 'fat/snf')
+                            <div class="col-sm-3 m-0" id="rateForRateCardFat">
+                                <label>Fat</label>
+                                <input type="number" class="form-control" placeholder="Enter Fat" id="fatSnf_fatValue" name="fat" required step="0.05" tabindex="3">
+                            </div>
+                            <div class="col-sm-3 m-0" id="rateForRateCardSnf">
+                                <label>SNF</label>
+                                <input type="number" value="1" class="form-control" placeholder="Enter Snf" id="fatSnf_snfValue" name="snf" required step="0.1" tabindex="4">
+                            </div>
+                        @endif
+
+                    </div>
+
+                    <div class="col-sm-12">
+        
+                        <div class="col-sm-3">
+                            <label>Quantity</label>
+                            <input type="text" required="true" class="form-control" placeholder="Enter Quantity" id="quantity" name="quantity" tabindex="5">
+                        </div>
+        
+                        <div class="col-sm-6 pt-30 text-center">
+                            <div class="col-sm-6">
+                                <label>Milk Type:
+                                    <b>
+                                        <input type="text" class="noinput" name="milkType" id="milkType" readonly value="Select Member" size="12">
+                                    </b>
+                                </label>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <label>Rate: 
+                                    <b>
+                                        <input type="text" class="noinput" value="" name="price" id="price" readonly value="0.0" size="8">
+                                    </b>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-3">
+                            <label>Amount</label>
+                            <input required="true" type="text" class="form-control" placeholder="Enter Amount" id="amount" name="amount" readonly tabindex="6">
+                        </div>    
+
+                    </div>
+
+                    <div class="col-sm-12 text-center">
+                        <div class="pt-20"></div>
+                        <button type="submit" name="submit" class="btn btn-primary" id="dailySubmitBtn" tabindex="7" disabled>Add Transaction</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="clearfix">
+
+        <div class="table-back ">
+            <table id="MyTable" class="display table-bordered tright" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>Member Code</th>
+                        <th>Milk Type</th>
+                        <th>Quantity</th>
+                        <th>Fat</th>
+                        <th>Snf</th>
+                        <th>Rate</th>
+                        <th>Total Amount</th>
+                        <th>&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                    </tr>
+                </thead>
+
+                <tbody class="table-transactions">
+
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+
+<div class="dnone" style="display:none;" id="hiddenAreaForForm">
+    <div class="p-5-20" id="hidedFormForEdit">
+        <h4>Member Code: <b><span class="memberCode3"></span></b>   </h4>
+
+        <form method="post" action="{{ url('/updateTransaction') }}" class="clearfix" id="dailyForm">
+            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+            <input type="hidden" id="dairyId3" name="dairyId" value="{{ Session::get('loginUserInfo')->dairyId }}">
+            <input type="hidden" name="status" value="true">
+            <input type="hidden" id="date3" value="{{date("d-m-Y", strtotime($date))}}" name="date" readonly>
+            <input type="hidden" id="dailyShift3" value="" name="dailyShift">
+            <input type="hidden" id="action3" value="replace" name="action" comment="decide what to do, new, replace">
+            <input type="hidden" id="dailyTransactionId3" value="" name="dailyTransactionId" comment="In replace condition">
+
+            <div class="col-sm-12">
+                <div class="pt-10"></div>
+                <div class="col-sm-3">
+                    <label>Member Code</label>
+                    <span class="memberCodeErrorMessage errorMessage"></span>
+                    <input type="text" class="form-control" id="memberCodeInputHidden3" name="memberCode" value="" readonly tabindex="11">
+                </div>
+        
+                <div class="col-sm-3">
+                    <label>Quantity</label>
+                    <input type="text" required="true" class="form-control" id="quantity3" onchange="callValues2()" placeholder="Enter Quantity" name="quantity" tabindex="12">
+                </div>
+        
+                {{-- @if(strtolower($returnData[1]) == 'fat')
+                    <div class="col-sm-6 m-0">
+                        <label>Fat</label>
+                        <input type="number" class="form-control" id="fatValue3" onchange="callValues2()" placeholder="Enter Fat" name="fatValue" step="0.05" tabindex="13">
+                    </div>
+                @elseif(strtolower($returnData[1]) == 'fat/snf')
+                    <div class="col-sm-3 m-0">
+                        <label>Fat</label>
+                        <input type="number" class="form-control" id="fatSnf_fatValue3" onchange="callValues2()" placeholder="Enter Fat" name="fat" required step="0.05" tabindex="13">
+                    </div>
+                    <div class="col-sm-3 m-0">
+                        <label>SNF</label>
+                        <input type="number" class="form-control" id="fatSnf_snfValue3" onchange="callValues2()" placeholder="Enter Snf" name="snf" required step="0.1" tabindex="14">
+                    </div>
+                @endif --}}
+        
+            </div>
+        
+            <div class="col-sm-12">
+                <div class="col-sm-3">
+                    <label>Member Name</label>
+                    <span class="memberNameErrorMessage errorMessage" id="memberNameErrorMessage3"></span>
+                    <div class="member-info-code">$memberInfo->memberPersonalName</div>
+                </div>
+        
+                <div class="col-sm-6 pt-30 text-center">
+                    <div class="col-sm-6">
+                        <label>Milk Type:
+                            <b>
+                                <input type="text" class="noinput" name="milkType" id="milkType3" readonly value="$info->milkeType" size="12">
+                            </b>
+                        </label>
+                    </div>
+        
+                    <div class="col-sm-6">
+                        <label>Rate: 
+                            <b>
+                                <input type="text" class="noinput" value="" id="price3" name="price" readonly value="0.0" size="8">
+                            </b>
+                        </label>
+                    </div>
+                </div>
+        
+                <div class="col-sm-3">
+                    <label>Amount</label>
+                    <input required="true" type="text" class="form-control" id="amount3" placeholder="Enter Amount" name="amount" readonly tabindex="5">
+                </div>    
+        
+            </div>
+        
+            <div class="col-sm-12 text-center">
+                <div class="pt-30"></div>
+                <button type="submit" name="submit" id="transBtn3" class="btn btn-primary" tabindex="17">Update</button>
+                <div class="fr"><a href="#" role="button" onclick="closeTransEdit(event)" class="btn btn-info" tabindex="18">Cancel</a></div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        if({{$flag}}){
+            show_popUp();
+        }else{
+            fetch_transactions_by_date();
+            $("#memberCode").focus();
+        }
+
+        if({{$noMember}}){
+            $.confirm({
+                title: 'Add New Member',
+                content: 'There are No members for Milk Collection, Please add atleast 1 member to start milk collection.',
+                type: 'orange',
+                typeAnimated: true,
+                buttons: {
+                    addMember: {
+                        text: 'Add Member',
+                        btnClass: 'btn-orange',
+                        action: function(){
+                            window.location = "{{url('memberSetupForm')}}";
+                        }
+                    }
+                }
+            });
+        }
+
+        if({{$noRateCard}}){
+            $.confirm({
+                title: 'Rate Card not Prepared',
+                content: 'There are No Rate card for Milk Collection, Please add Rate card and apply for cow & buffalo to start milk collection.',
+                type: 'orange',
+                typeAnimated: true,
+                buttons: {
+                    addMember: {
+                        text: 'Set Rate Card',
+                        btnClass: 'btn-orange',
+                        action: function(){
+                            window.location = "{{url('rateCardShowNew')}}";
+                        }
+                    }
+                }
+            });
+        }
+
+    });
+
+    dairyId = document.getElementById("dairyId").value;
+
+    $("#dateShiftPopup .close").on('click', function(){
+        $.alert("Please select <b>Date</b> before proceed.");
+    })
+    $("#sameTransModel .close").on('click', function(){
+        // $.alert("Please select <b>Date</b> before proceed.");
+        $("#sameTransModel").fadeOut();
+        $("#memberCodeInputHidden").val("");
+        $("#memberCode").val("").focus();
+        dailySubmitButtonUpdate('');
+    })
+
+    $("#sdate").on("dp.change", function(){
+        // console.log($(this).val());
+        $("#date").val($(this).val());
+        url = "{{ url('/DailyTransactionSubmit') }}?date="+$("#sdate").val()+"&shift="+$("#sdailyShift").val();
+        $("#dailyForm").attr("action", url);
+        changeUrl();
+    })
+    
+    $("#sdailyShift").on("change", function(){
+        // console.log($(this).val());
+        $("#dailyShift").val($(this).val());
+        url = "{{ url('/DailyTransactionSubmit') }}?date="+$("#sdate").val()+"&shift="+$("#sdailyShift").val();
+        $("#dailyForm").attr("action", url);
+        changeUrl();
+    })
+
+    function changeUrl(){
+        param = "date="+$("#sdate").val()+"&shift="+$("#sdailyShift").val();
+        if(document.location.href.indexOf('?') != -1) {
+            var url = "{{ url('/DailyTransactionForm') }}"+"?"+param;
+        }else{
+            var url = "{{ url('/DailyTransactionForm') }}"+"?"+param;
+        }
+        window.history.pushState("data","Title",url);
+      }
+
+    function show_popUp(e){
+        $('#dateShiftPopup').fadeIn();
+        $('.pageblur').addClass("blur-3");
+    }
+    function hidePopup(){
+        $('#dateShiftPopup').fadeOut();
+        $('.pageblur').removeClass("blur-3");
+    }
+
+    function fetch_transactions_by_date(e){
+        loader('show');
+
+        sdate = $("#sdate").val();
+        sshift = $("#sdailyShift").val();
+
+        // console.log(sdate);
+        // console.log(sshift);
+        
+        $.ajax({
+            type:"POST",
+            url:'dailyTransactionListAjax' ,
+            data: {
+                dairyId: dairyId,
+                date: sdate,
+                shift: sshift,
+            },
+            success:function(res){
+                // console.log(res);
+                loader("hide");
+                $(".table-transactions").html(res);
+                hidePopup();
+                $("#memberCode").focus();
+                // table.reload();
+            },
+            error:function(res){
+                loader("hide");
+                console.log(res);
+            }
+        });
+
+    }
+
+
+    $("#fatSnf_fatValue, #fatSnf_snfValue, #quantity").on("keyup", function(event){
+        if($("#fatSnf_snfValue").val()=="" || $("#fatSnf_fatValue").val()==""){
+            return false;
+        }
+        fetchValues();
+    })
+    
+    function fetchValues(){
+        snf = $("#fatSnf_snfValue").val();
+        fat = $("#fatSnf_fatValue").val();
+
+        memberCode = $("#memberCodeInputHidden").val();
+
+        $.ajax({
+            type:"POST",
+            url:'fatSnfRateCardvalue',
+            data: {
+                dairyId: dairyId,
+                memberCode: memberCode,
+                snf: snf,
+                fat:fat
+            },
+            success:function(res){
+                if(res.error){
+                    $("#response-alert").html(res.msg).show();
+                    // setTimeout(function (e){ $("#response-alert").fadeOut('slow');}, 4000);
+                    dailySubmitButtonUpdate('');
+                }else{
+                    $("#response-alert").fadeOut('fast');
+
+                    $("#price").val(res.amount);
+                    am = (parseFloat($("#quantity").val()) * parseFloat(res.amount)).toFixed(2);
+                    $("#amount").val(am);
+
+                    dailySubmitButtonUpdate( "ok" );
+                }
+                
+            },
+            error:function(res){
+                console.log(res);
+            }
+        });
+    }
+
+    function dailySubmitButtonUpdate( flg){
+        if(flg==(null||'')){
+            $("#dailySubmitBtn").attr("disabled", true);
+            return true;
+        }
+
+        snf = $("#fatSnf_snfValue").val();
+        fat = $("#fatSnf_fatValue").val();
+        qty = $("#quantity").val();
+        memberCode = $("#memberCodeInputHidden").val();
+
+        if(snf == (null||"") || fat == (null||"") || qty == (null||"") || memberCode == (null||"")){
+            console.log(snf, fat, qty, memberCode);
+            $("#dailySubmitBtn").attr("disabled", true);
+        }else{
+            $("#dailySubmitBtn").attr("disabled", false);
+            console.log(memberCode);
+        }
+    }
+
+	/* date picker */
+    $(function () {
+        $('#sdate').datetimepicker({
+             format: 'DD-MM-YYYY'
+        });
+    });
+
+    /* get rate by fat and fat/snf  */
+
+    function getRateByFatSnf(PreFat,PreSnf){
+        dairyId = document.getElementById("dairyId").value ;
+
+        $.ajax({
+            type:"POST",
+            url:'fatSnfRateCardvalue' ,
+            data: {
+                dairyId: dairyId,
+                fatRange: PreFat,
+                snfRange: PreSnf,
+            },
+            success:function(res){   
+            var Quantity = document.getElementById("quantity").value;
+            var amount = parseInt(Quantity)+parseInt(res);
+                document.getElementById("amount").value = amount;
+            }
+        });
+    }
+
+
+ /* get member name by member code */
+ function SetMemberCode(e){
+     v = $(e).val();
+     $("#memberCodeInputHidden").val(v);
+     CheckMemberName(v);
+     console.log($("#memberCodeInputHidden").val());
+  }
+
+  /* get member code by member name */
+    function CheckMemberName(memberCode){
+
+            loader("show");
+    
+            if(memberCode!= ""){
+                $.ajax({
+                    type:"POST",
+                    url:'DailyTransactionMemberName',
+                    data: {
+                        member_code: memberCode,
+                        shift: $("#dailyShift").val(),
+                        date: $("#date").val()
+                    },
+                    success:function(res){
+                        console.log(res);
+                        if(res == ""){
+                            document.getElementById("memberNameErrorMessage").innerHTML = "Member Name is not valid.";
+                            document.getElementById("memberCodeInputHidden").value = "";
+                            $(".member-info-code").val("");
+                        }else{
+                            document.getElementById("memberNameInputHidden").value = res.code;
+                            document.getElementById("memberNameErrorMessage").innerHTML = "";
+                            document.getElementById("quantity").focus();
+                            // $(".member-info-code").val(res);
+                            $(".member-info-code").html(res.code);
+                            $("#milkType").val(res.milkType);
+                            if(res.trans!=""){
+                                $("#sameTransModel .wmodel-body").html(res.trans);
+                                $("#sameTransModel").fadeIn();
+                            }
+                        }
+                        loader("hide");
+                    },
+                    error:function(data){
+                        loader("hide");
+                        console.log(data);
+                    }
+                
+                });
+            }else{
+                document.getElementById("memberNameErrorMessage").innerHTML = "Member Name is not valid.";
+                document.getElementById("memberCodeInputHidden").value = "";
+            }
+    }
+
+  /* Supplier email validation  */
+  function checkRateCardType(){
+ 
+	var rateCardType  = document.getElementById("rateCardType").value;
+	
+	if(rateCardType == "Rate on Fat/Snf"){
+		$("#rateForRateCardFat").show();
+		$("#rateForRateCardSnf").show();
+		
+	}else{
+		$("#rateForRateCard").show();
+		$("#rateForRateCardFat").show();
+		$("#rateForRateCardSnf").hide();
+	}
+  }
+
+    function editTransaction(e, tId){
+        e.preventDefault();
+        loader("show");
+        $.ajax({
+            type:"POST",
+            url:'getTransValues',
+            data: {
+                transId:tId,
+            },
+            success:function(res){
+                if(res.error==false){
+                    showEditTransModel(res.trans);
+                }else{
+                    $.alert("Some error has occurd at server.");     
+                }
+                console.log(res);
+                loader("hide");
+            },
+            error:function(res){
+                console.log(res);
+                loader("hide");
+                $.alert("Something happened, Please try again.");
+            }
+        });
+    }
+
+    function showEditTransModel(trans){
+        $("#quantity3").val(trans.milkQuality);
+        $("#fatSnf_fatValue3").val(trans.fat);
+        $("#fatSnf_snfValue3").val(trans.snf);
+        $("#amount3").val(trans.amount);
+        $("#price3").val(trans.rate);
+        $("#dailyTransactionId3").val(trans.id);
+        $("#memberCodeInputHidden3").val(trans.memberCode);
+        $(".member-info-code").html(trans.memberName);
+        $("#milkType3").val(trans.milkType);
+
+        $("#sameTransModel .wmodel-body").html('');
+        $("#hidedFormForEdit").detach().appendTo('#sameTransModel .wmodel-body')
+        $("#sameTransModel").fadeIn();
+    }
+
+    function closeTransEdit(e){
+        e.preventDefault();
+        $("#hidedFormForEdit").detach().appendTo('#hiddenAreaForForm')
+        $("#sameTransModel").fadeOut();
+    }
+
+
+    function callValues2(){
+        snf = $("#fatSnf_snfValue3").val();
+        fat = $("#fatSnf_fatValue3").val();
+        console.log(snf,fat);
+
+        if($("#fatSnf_snfValue3").val()=="" || $("#fatSnf_fatValue3").val()==""){
+            return false;
+        }
+        console.log(this);
+        fetchValues3();
+    }
+    
+    function fetchValues3(){
+        snf = $("#fatSnf_snfValue3").val();
+        fat = $("#fatSnf_fatValue3").val();
+
+        memberCode = $("#memberCodeInputHidden3").val();
+
+        loader("show");
+        $.ajax({
+            type:"POST",
+            url:'fatSnfRateCardvalue',
+            data: {
+                dairyId: dairyId,
+                memberCode: memberCode,
+                snf: snf,
+                fat: fat
+            },
+            success:function(res){
+                $("#price3").val(res.amount);
+                am = (parseFloat($("#quantity3").val()) * parseFloat(res.amount)).toFixed(2);
+                $("#amount3").val(am);
+                loader("hide");
+            },
+            error:function(res){
+                console.log(res);
+                loader("hide");
+            }
+        });
+    }
+
+
+    $(document).ready(function() {
+        table = $('#MyTable').DataTable( {
+            initComplete: function () {
+                this.api().columns().every( function () {
+                    var column = this;
+                    var select = $('<select><option value=""></option></select>')
+                        .appendTo( $(column.footer()).empty() )
+                        .on( 'change', function () {
+                            var val = $.fn.dataTable.util.escapeRegex(
+                                $(this).val()
+                            );
+                    //to select and search from grid
+                            column
+                                .search( val ? '^'+val+'$' : '', true, false )
+                                .draw();
+                        });
+    
+                    column.data().unique().sort().each( function ( d, j ) {
+                        select.append('<option value="'+d+'">'+d+'</option>')
+                    });
+                });
+            }
+        });
+
+    });
+
+</script>
+@endsection

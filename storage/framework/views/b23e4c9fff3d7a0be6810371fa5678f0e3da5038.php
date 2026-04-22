@@ -1,0 +1,268 @@
+ 
+
+<?php $__env->startSection('content'); ?>
+
+
+
+<div class="fcard margin-fcard-1 pt-0 clearfix">
+
+    <div class="upper-controls clearfix">
+
+        <div class="fl">
+
+            <h3>Member List</h3>
+
+            
+            <div class="light-color f-12">Total: <?php echo e(count($members)); ?></div>
+
+        </div>
+
+        <div class="fr">
+
+            <a href="#" class="info-text" data-toggle="tooltip" data-placement="left" title="Use Shift button and mouse wheel to scroll the table in horizontally."><i class="glyphicon glyphicon-info-sign"></i></a>
+
+            <a class="btn btn-primary" href="memberSetupForm">Add New Member</a>
+
+        </div>
+
+    </div>
+
+    <div class="table-back">
+
+        <table id="MyTable" class="table table-bordered" cellspacing="0" width="100%">
+
+            <thead>
+
+                <tr>
+
+                    <th>Member Code</th>
+
+                    <th>Member Name</th>
+
+                    <th>Email</th>
+
+                    <th>Gender</th>
+
+                    <th>Mobile Number</th>
+
+                    <th>Aadhar Number</th>
+
+                    <th>Address</th>
+
+                    <th>Balance&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+
+                    <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+
+                </tr>
+
+            </thead>
+
+
+
+            <tbody>
+
+
+
+                <?php $__currentLoopData = $members; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $d): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+
+
+
+                <?php 
+
+                    $bal = DB::table("user_current_balance")->where("ledgerId", $d->ledgerId)->get()->first();
+
+                ?>
+
+
+
+                <tr>
+
+                    <td><?php echo e($d->memberPersonalCode); ?></td>
+
+                    <td><?php echo e($d->memberPersonalName); ?></td>
+
+                    <td><?php echo e($d->memberPersonalEmail); ?></td>
+
+                    <td><?php echo e($d->memberPersonalGender); ?></td>
+
+                    <td><?php echo e($d->memberPersonalMobileNumber); ?></td>
+
+                    <td><?php echo e($d->memberPersonalAadarNumber); ?></td>
+
+                    <td><?php echo e($d->memberPersonalAddress); ?>, <?php echo e($d->memberPersonalState); ?>, <?php echo e($d->memberPersonalCity); ?></td>
+
+                    <td> 
+
+                        <span class="bold <?php echo e($bal->openingBalanceType); ?>"> 
+
+                            <?php echo e(number_format((float)str_replace("-","",$bal->openingBalance),2)); ?>
+
+
+                        </span>
+
+                    </td>
+
+                    <td>
+
+                        <a href="editMemberInfo?member_id=<?php echo e($d->id); ?>" class="link"> <i class="fa fa-edit"></i></a>
+
+                        <a href="#" onclick="deleteMember(this, <?php echo e($d->id); ?>);" class="danger-text" data-code="<?php echo e($d->memberPersonalCode); ?>" data-name="<?php echo e($d->memberPersonalName); ?>"> <i class="fa fa-trash-o"></i> </a>
+
+                    </td>
+
+                </tr>
+
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+
+
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<script>
+
+    $(document).ready(function(){
+
+        $('#MyTable').DataTable({
+
+            initComplete: function (){
+
+                this.api().columns().every( function () {
+
+                    var column = this;
+
+                    var select = $('<select><option value=""></option></select>')
+
+                        .appendTo( $(column.footer()).empty())
+
+                        .on('change', function () {
+
+                            var val = $.fn.dataTable.util.escapeRegex(
+
+                                $(this).val()
+
+                            );
+
+                    //to select and search from grid
+
+                            column
+
+                                .search( val ? '^'+val+'$' : '', true, false )
+
+                                .draw();
+
+                        });
+
+    
+
+                    column.data().unique().sort().each( function (d, j) {
+
+                        select.append( '<option value="'+d+'">'+d+'</option>')
+
+                    });
+
+                });
+
+            }
+
+        });
+
+    });
+
+
+
+
+
+    function deleteMember(e, memberId){
+
+        memberName = $(e).data("name");
+
+        memberCode = $(e).data("code");
+
+
+
+        $.confirm({
+
+            title: "Are you sure.",
+
+            content: 'You are about to delete member \n Code: '+memberCode+'\n Name: '+memberName,
+
+            type: 'orange',
+
+            typeAnimated: true,
+
+            buttons: {
+
+                confirm: {
+
+                    text: "Proceed",
+
+                    btnClass: 'btn-danger',
+
+                    action: function(confirm){
+
+                        realDelete(memberId)
+
+                    },
+
+                },
+
+                cancel:{
+
+                }
+
+            }
+
+
+
+        });
+
+    }
+
+
+
+  
+
+    function realDelete(memberId){
+
+        console.log("sdf");
+
+        if(memberId){
+
+            $.ajax({
+
+                type:"POST",
+
+                url:'deleteMember' ,
+
+                data: {
+
+                    memberId: memberId,
+
+                },
+
+                success:function(res){  
+
+                    $.alert("Member Successfully Delated");        
+
+                    location.reload();
+
+                }
+
+            });
+
+        }
+
+    }
+
+
+
+</script>
+
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('theme.default', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

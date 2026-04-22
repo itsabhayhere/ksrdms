@@ -1,0 +1,36 @@
+[03-Nov-2019 09:38:11 UTC] PHP Notice:  Undefined index: razorpay_payment_id in /home/bnb6y5ayl8dj/public_html/ksrdms.com/razorpay/verify.php on line 42
+[03-Nov-2019 09:41:22 UTC] PHP Notice:  Undefined index: razorpay_payment_id in /home/bnb6y5ayl8dj/public_html/ksrdms.com/razorpay/verify.php on line 42
+[03-Nov-2019 09:53:06 UTC] PHP Notice:  Undefined index: razorpay_payment_id in /home/bnb6y5ayl8dj/public_html/ksrdms.com/razorpay/verify.php on line 42
+[03-Nov-2019 09:53:38 UTC] PHP Notice:  Undefined index: razorpay_payment_id in /home/bnb6y5ayl8dj/public_html/ksrdms.com/razorpay/verify.php on line 42
+[03-Nov-2019 09:54:08 UTC] PHP Notice:  Undefined index: razorpay_payment_id in /home/bnb6y5ayl8dj/public_html/ksrdms.com/razorpay/verify.php on line 42
+[03-Nov-2019 10:07:17 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function hmac() in /home/bnb6y5ayl8dj/public_html/ksrdms.com/razorpay/verify.php:32
+Stack trace:
+#0 {main}
+  thrown in /home/bnb6y5ayl8dj/public_html/ksrdms.com/razorpay/verify.php on line 32
+[03-Nov-2019 10:07:17 UTC] PHP Notice:  Undefined index: razorpay_payment_id in /home/bnb6y5ayl8dj/public_html/ksrdms.com/razorpay/verify.php on line 47
+[03-Nov-2019 10:07:47 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function hmac_sha256() in /home/bnb6y5ayl8dj/public_html/ksrdms.com/razorpay/verify.php:32
+Stack trace:
+#0 {main}
+  thrown in /home/bnb6y5ayl8dj/public_html/ksrdms.com/razorpay/verify.php on line 32
+[03-Nov-2019 10:07:48 UTC] PHP Notice:  Undefined index: razorpay_payment_id in /home/bnb6y5ayl8dj/public_html/ksrdms.com/razorpay/verify.php on line 47
+[03-Nov-2019 10:09:17 UTC] PHP Notice:  Undefined index: razorpay_payment_id in /home/bnb6y5ayl8dj/public_html/ksrdms.com/razorpay/verify.php on line 39
+[03-Nov-2019 10:21:17 UTC] PHP Notice:  Undefined index: razorpay_payment_id in /home/bnb6y5ayl8dj/public_html/ksrdms.com/razorpay/verify.php on line 39
+[03-Nov-2019 11:04:45 UTC] PHP Notice:  Undefined index: razorpay_payment_id in /home/bnb6y5ayl8dj/public_html/ksrdms.com/razorpay/verify.php on line 39
+[03-Nov-2019 11:06:11 UTC] PHP Notice:  Undefined index: razorpay_payment_id in /home/bnb6y5ayl8dj/public_html/ksrdms.com/razorpay/verify.php on line 39
+[03-Nov-2019 11:13:05 UTC] PHP Notice:  Undefined index: razorpay_payment_id in /home/bnb6y5ayl8dj/public_html/ksrdms.com/razorpay/verify.php on line 39
+[03-Nov-2019 11:14:07 UTC] PHP Fatal error:  Uncaught ArgumentCountError: Too few arguments to function Razorpay\Api\Utility::verifyWebhookSignature(), 1 passed in /home/bnb6y5ayl8dj/public_html/ksrdms.com/razorpay/verify.php on line 29 and exactly 3 expected in /home/bnb6y5ayl8dj/public_html/ksrdms.com/razorpay/razorpay-php/src/Utility.php:38
+Stack trace:
+#0 /home/bnb6y5ayl8dj/public_html/ksrdms.com/razorpay/verify.php(29): Razorpay\Api\Utility->verifyWebhookSignature(Array)
+#1 {main}
+  thrown in /home/bnb6y5ayl8dj/public_html/ksrdms.com/razorpay/razorpay-php/src/Utility.php on line 38
+[03-Nov-2019 11:14:08 UTC] PHP Notice:  Undefined index: razorpay_payment_id in /home/bnb6y5ayl8dj/public_html/ksrdms.com/razorpay/verify.php on line 39
+[03-Nov-2019 11:20:40 UTC] PHP Fatal error:  Uncaught ArgumentCountError: Too few arguments to function Razorpay\Api\Utility::verifyWebhookSignature(), 1 passed in /home/bnb6y5ayl8dj/public_html/ksrdms.com/razorpay/verify.php on line 29 and exactly 3 expected in /home/bnb6y5ayl8dj/public_html/ksrdms.com/razorpay/razorpay-php/src/Utility.php:38
+Stack trace:
+#0 /home/bnb6y5ayl8dj/public_html/ksrdms.com/razorpay/verify.php(29): Razorpay\Api\Utility->verifyWebhookSignature(Array)
+#1 {main}
+  thrown in /home/bnb6y5ayl8dj/public_html/ksrdms.com/razorpay/razorpay-php/src/Utility.php on line 38
+[03-Nov-2019 11:20:41 UTC] PHP Notice:  Undefined index: razorpay_payment_id in /home/bnb6y5ayl8dj/public_html/ksrdms.com/razorpay/verify.php on line 39
+[03-Nov-2019 11:21:19 UTC] PHP Notice:  Undefined index: razorpay_payment_id in /home/bnb6y5ayl8dj/public_html/ksrdms.com/razorpay/verify.php on line 39
+[03-Nov-2019 11:27:54 UTC] PHP Notice:  Undefined index: razorpay_payment_id in /home/bnb6y5ayl8dj/public_html/ksrdms.com/razorpay/verify.php on line 38
+[03-Nov-2019 11:29:40 UTC] PHP Notice:  Undefined index: razorpay_payment_id in /home/bnb6y5ayl8dj/public_html/ksrdms.com/razorpay/verify.php on line 38
+[03-Nov-2019 11:34:22 UTC] PHP Notice:  Undefined index: razorpay_payment_id in /home/bnb6y5ayl8dj/public_html/ksrdms.com/razorpay/verify.php on line 38

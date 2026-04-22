@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /knitbox
+Disallow: /termsCond
+Disallow: /privacyPolicy
